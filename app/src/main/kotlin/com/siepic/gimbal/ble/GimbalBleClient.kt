@@ -106,7 +106,7 @@ class GimbalBleClient(private val appContext: Context) {
 
     private fun connect(device: BluetoothDevice) {
         _state.value = ConnectionState.CONNECTING
-        gatt = device.connectGatt(appContext, false, gattCallback)
+        gatt = device.connectGatt(appContext, false, gattCallback, BluetoothDevice.TRANSPORT_LE)
     }
 
     fun disconnect() {
@@ -118,7 +118,16 @@ class GimbalBleClient(private val appContext: Context) {
         override fun onConnectionStateChange(g: BluetoothGatt, status: Int, newState: Int) {
             when (newState) {
                 BluetoothProfile.STATE_CONNECTED -> {
-                    g.discoverServices()
+                    // Bluefruit Connect's recipe for stable links:
+                    //   1. fast connection interval (~12ms) for 20 Hz control
+                    //   2. larger MTU so a 15-byte !A packet fits in one ATT frame
+                    //   3. discover services only after the MTU exchange settles
+                    g.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH)
+                    if (!g.requestMtu(247)) {
+                        // requestMtu returned false synchronously — fall back so we
+                        // don't hang waiting for an onMtuChanged that never fires.
+                        g.discoverServices()
+                    }
                 }
                 BluetoothProfile.STATE_DISCONNECTED -> {
                     rxChar = null
@@ -130,6 +139,11 @@ class GimbalBleClient(private val appContext: Context) {
                     }
                 }
             }
+        }
+
+        override fun onMtuChanged(g: BluetoothGatt, mtu: Int, status: Int) {
+            Log.d(tag, "MTU now $mtu (status $status)")
+            g.discoverServices()
         }
 
         override fun onServicesDiscovered(g: BluetoothGatt, status: Int) {
