@@ -73,6 +73,7 @@ fun GimbalScreen(
                 Mode.JOYSTICK -> JoystickPane(vm)
                 Mode.TILT -> TiltPane(vm)
                 Mode.BUTTONS -> ButtonsPane(vm)
+                Mode.COLOR -> ColorPane(vm)
             }
         }
         ActionRow(onAction = vm::tapAction)
@@ -138,7 +139,7 @@ private fun ModeSelector(currentMode: Mode, onSelect: (Mode) -> Unit) {
             .fillMaxWidth()
             .height(64.dp)
             .padding(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         ModeButton("JOYSTICK", currentMode == Mode.JOYSTICK, Modifier.weight(1f)) {
@@ -149,6 +150,9 @@ private fun ModeSelector(currentMode: Mode, onSelect: (Mode) -> Unit) {
         }
         ModeButton("BUTTONS", currentMode == Mode.BUTTONS, Modifier.weight(1f)) {
             onSelect(Mode.BUTTONS)
+        }
+        ModeButton("COLOR", currentMode == Mode.COLOR, Modifier.weight(1f)) {
+            onSelect(Mode.COLOR)
         }
     }
 }
@@ -167,7 +171,15 @@ private fun ModeButton(
             containerColor = if (selected) GimbalOrange else GimbalMediumGray,
             contentColor = if (selected) GimbalBlack else GimbalLightGray,
         ),
-    ) { Text(label, style = MaterialTheme.typography.labelLarge) }
+        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            maxLines = 1,
+            softWrap = false,
+        )
+    }
 }
 
 @Composable

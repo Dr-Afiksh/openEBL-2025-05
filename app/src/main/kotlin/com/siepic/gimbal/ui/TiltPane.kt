@@ -60,6 +60,8 @@ fun TiltPane(vm: GimbalViewModel, modifier: Modifier = Modifier) {
             )
         }
 
+        SafetyControls(vm)
+
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = "Joystick protocol: ${if (protocol == ProtocolMode.LEGACY_FLOAT_A) "!A floats" else "!J bytes (firmware patch needed)"}",

@@ -35,7 +35,7 @@ fun JoystickPane(vm: GimbalViewModel, modifier: Modifier = Modifier) {
 
     Column(
         modifier = modifier.fillMaxSize().padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(
@@ -80,6 +80,8 @@ fun JoystickPane(vm: GimbalViewModel, modifier: Modifier = Modifier) {
             color = GimbalLightGray,
             style = MaterialTheme.typography.titleMedium,
         )
+
+        SafetyControls(vm)
     }
 }
 
